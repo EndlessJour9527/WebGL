@@ -104,7 +104,9 @@ function glEnumToString(glOrExt, value) {
   if (!found) {
     found = ["0x" + Number(value).toString(16)];
   }
-  found = found.toSorted();
+  if(found.toSorted){
+    found = found.toSorted();
+  }
   return found.join('/');
 }
 {
@@ -1632,6 +1634,8 @@ var getDefault3DContextVersion = function() {
  * @return {!WebGLRenderingContext} The created context.
  */
 var create3DContext = function(opt_canvas, opt_attributes, opt_version) {
+  if(navigator.gl)
+    return navigator.gl;
   if (window.initTestingHarness) {
     window.initTestingHarness();
   }
@@ -1899,6 +1903,7 @@ var glErrorShouldBeImpl = function(gl, glErrors, reportSuccesses, opt_msg) {
     var msg = "getError was " + ((glErrors.length > 1) ? "one of: " : "expected value: ");
     testPassed(msg + expected + " : " + opt_msg);
   }
+  // console.log("getError was " + fnErrStr(err) + " : " + opt_msg);
   return err;
 };
 

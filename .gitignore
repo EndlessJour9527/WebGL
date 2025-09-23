@@ -47,4 +47,9 @@ extensions/index.html
 extensions/registry.xml
 extensions/extension-schematron.xsl
 extensions/schematron/webgl_message.xsl
+**/.cache/*
 
+node_modules/
+.vscode/
+auth-test/
+logs/

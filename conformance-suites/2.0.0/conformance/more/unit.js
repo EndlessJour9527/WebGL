@@ -303,6 +303,7 @@ function testPassed(assertName, name) {
     __testLog__.appendChild(d);
   }
   doTestNotify([assertName, name].concat(args).join("--"));
+  // console.log("PASS: " + (name==null ? assertName : name + " (in " + assertName + ")"));
 }
 
 function checkTestSuccess() {

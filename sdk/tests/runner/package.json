@@ -1,0 +1,12 @@
+{
+  "name": "webgl-tests-runner",
+  "version": "0.1.0",
+  "private": true,
+  "license": "MIT",
+  "scripts": {
+    "runner": "node ./runner.js"
+  },
+  "dependencies": {
+    "glob": "^7.2.3"
+  }
+}

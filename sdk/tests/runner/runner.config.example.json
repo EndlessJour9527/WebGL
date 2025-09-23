@@ -1,0 +1,20 @@
+{
+  "casesRoot": "../conformance2",
+  "logsSrc": "./.cache/logs",
+  "logsOut": "../logs/0.10.01",
+  "caseGlob": "./rendering/*.html",
+  "jsarBin": "{your_path}/transmute_browser",
+  "useFileURL": false,
+  "args": [
+    "{{absCasePath}}"
+  ],
+  "jsarCwd": "./",
+  "inheritIO": true,
+  "detached": true,
+  "killProcessGroup": true,
+  "killGraceMs": 500,
+  "env": {},
+  "execution": {
+    "waitMs": 3000
+  }
+}

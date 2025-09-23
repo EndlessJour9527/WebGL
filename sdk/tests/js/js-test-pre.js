@@ -4,10 +4,10 @@ Use of this source code is governed by an MIT-style license that can be
 found in the LICENSE.txt file.
 */
 
-(function() {
+(function () {
   var testHarnessInitialized = false;
 
-  var initNonKhronosFramework = function() {
+  var initNonKhronosFramework = function () {
     if (testHarnessInitialized) {
       return;
     }
@@ -28,23 +28,23 @@ found in the LICENSE.txt file.
       // The WebKit testing system compares console output.
       // Because the output of the WebGL Tests is GPU dependent
       // we turn off console messages.
-      window.console.log = function() { };
-      window.console.error = function() { };
+      window.console.log = function () { };
+      window.console.error = function () { };
       window.internals.settings.setWebGLErrorsToConsoleEnabled(false);
     }
 
     /* -- end platform specific code --*/
   }
 
-  this.initTestingHarness = function() {
+  this.initTestingHarness = function () {
     initNonKhronosFramework();
   }
 }());
 
-var getUrlOptions = (function() {
+var getUrlOptions = (function () {
   var _urlOptionsParsed = false;
   var _urlOptions = {};
-  return function() {
+  return function () {
     if (!_urlOptionsParsed) {
       var s = window.location.href;
       var q = s.indexOf("?");
@@ -68,10 +68,10 @@ var getUrlOptions = (function() {
 })();
 
 if (typeof quietMode == 'undefined') {
-  var quietMode = (function() {
+  var quietMode = (function () {
     var _quietModeChecked = false;
     var _isQuiet = false;
-    return function() {
+    return function () {
       if (!_quietModeChecked) {
         _isQuiet = (getUrlOptions().quiet == 1);
         _quietModeChecked = true;
@@ -96,7 +96,7 @@ const RESULTS = {
 // We cache these values since they will potentially be accessed many (100k+)
 // times and accessing window can be significantly slower than a local variable.
 const locationPathname = window.location.pathname;
-const webglTestHarness = window.parent.webglTestHarness;
+const webglTestHarness = null;// window.parent.webglTestHarness;
 
 function reportTestResultsToHarness(success, msg) {
   if (success) {
@@ -133,24 +133,21 @@ function notifyFinishedToHarness() {
 // We flush the buffered logs on testFailed and/or finishTest.
 var _bufferedConsoleLogs = [];
 
-function _bufferedLogToConsole(msg)
-{
+function _bufferedLogToConsole(msg) {
   if (_bufferedConsoleLogs) {
-    _bufferedConsoleLogs.push('[buffered] ' + msg);
+    // _bufferedConsoleLogs.push('[buffered] ' + msg);
   } else if (window.console) {
-    window.console.log(msg);
+    // window.console.log(msg);
   }
 }
 
 // Public entry point exposed to many other files.
-function bufferedLogToConsole(msg)
-{
+function bufferedLogToConsole(msg) {
   _bufferedLogToConsole(msg);
 }
 
 // Called implicitly by testFailed().
-function _flushBufferedLogsToConsole()
-{
+function _flushBufferedLogsToConsole() {
   if (_bufferedConsoleLogs) {
     if (window.console) {
       for (var ii = 0; ii < _bufferedConsoleLogs.length; ++ii) {
@@ -163,49 +160,44 @@ function _flushBufferedLogsToConsole()
 
 var _jsTestPreVerboseLogging = false;
 
-function enableJSTestPreVerboseLogging()
-{
-    _jsTestPreVerboseLogging = true;
+function enableJSTestPreVerboseLogging() {
+  _jsTestPreVerboseLogging = true;
 }
 
-function description(msg)
-{
-    initTestingHarness();
-    if (msg === undefined) {
-      msg = document.title;
-    }
-    // For MSIE 6 compatibility
-    var span = document.createElement("span");
-    span.innerHTML = '<p>' + msg + '</p><p>On success, you will see a series of "<span class="pass">PASS</span>" messages, followed by "<span class="pass">TEST COMPLETE</span>".</p>';
-    var description = document.getElementById("description");
-    if (description.firstChild)
-        description.replaceChild(span, description.firstChild);
-    else
-        description.appendChild(span);
-    if (_jsTestPreVerboseLogging) {
-        _bufferedLogToConsole(msg);
-    }
+function description(msg) {
+  initTestingHarness();
+  if (msg === undefined) {
+    msg = document.title;
+  }
+  // For MSIE 6 compatibility
+  var span = document.createElement("span");
+  span.innerHTML = '<p>' + msg + '</p><p>On success, you will see a series of "<span class="pass">PASS</span>" messages, followed by "<span class="pass">TEST COMPLETE</span>".</p>';
+  var description = document.getElementById("description");
+  if (description.firstChild)
+    description.replaceChild(span, description.firstChild);
+  else
+    description.appendChild(span);
+  if (_jsTestPreVerboseLogging) {
+    _bufferedLogToConsole(msg);
+  }
 }
 
-function _addSpan(contents)
-{
-    var span = document.createElement("span");
-    document.getElementById("console").appendChild(span); // insert it first so XHTML knows the namespace
-    span.innerHTML = contents + '<br />';
+function _addSpan(contents) {
+  var span = document.createElement("span");
+  document.getElementById("console").appendChild(span); // insert it first so XHTML knows the namespace
+  span.innerHTML = contents + '<br />';
 }
 
-function debug(msg)
-{
-    if (!quietMode())
-      _addSpan(msg);
-    if (_jsTestPreVerboseLogging) {
-        _bufferedLogToConsole(msg);
-    }
+function debug(msg) {
+  if (!quietMode())
+    _addSpan(msg);
+  if (_jsTestPreVerboseLogging) {
+    _bufferedLogToConsole(msg);
+  }
 }
 
-function escapeHTML(text)
-{
-    return text.replace(/&/g, "&amp;").replace(/</g, "&lt;");
+function escapeHTML(text) {
+  return text.replace(/&/g, "&amp;").replace(/</g, "&lt;");
 }
 /**
  * Defines the exception type for a test failure.
@@ -213,8 +205,8 @@ function escapeHTML(text)
  * @param {string} message The error message.
  */
 var TestFailedException = function (message) {
-   this.message = message;
-   this.name = "TestFailedException";
+  this.message = message;
+  this.name = "TestFailedException";
 };
 
 /**
@@ -232,6 +224,7 @@ function testPassed(msg) {
     if (_jsTestPreVerboseLogging) {
         _bufferedLogToConsole('PASS ' + msg);
     }
+    console.log('PASS ' + msg, 'color: green;');
 }
 
 /**
@@ -246,6 +239,7 @@ function testFailed(msg) {
     _addSpan('<span><span class="fail">FAIL</span> ' + escapeHTML(msg) + '</span>');
     _bufferedLogToConsole('FAIL ' + msg);
     _flushBufferedLogsToConsole();
+    console.log('FAIL ' + msg, 'color: red;');
 }
 
 var _currentTestName;
@@ -254,18 +248,16 @@ var _currentTestName;
  * Sets the current test name for usage within testPassedOptions/testFailedOptions.
  * @param {string=} name The name to set as the current test name.
  */
-function setCurrentTestName(name)
-{
-    _currentTestName = name;
+function setCurrentTestName(name) {
+  _currentTestName = name;
 }
 
 /**
  * Gets the current test name in use within testPassedOptions/testFailedOptions.
  * @return {string} The name of the current test.
  */
-function getCurrentTestName()
-{
-    return _currentTestName;
+function getCurrentTestName() {
+  return _currentTestName;
 }
 
 /**
@@ -273,16 +265,14 @@ function getCurrentTestName()
  * @param {string} msg The message to be shown in the pass result.
  * @param {boolean} addSpan Indicates whether the message will be visible (thus counted in the results) or not.
  */
-function testPassedOptions(msg, addSpan)
-{
-    reportTestResultsToHarness(true, _currentTestName + ": " + msg);
-    if (addSpan && !quietMode())
-    {
-        _addSpan('<span><span class="pass">PASS</span> ' + escapeHTML(_currentTestName) + ": " + escapeHTML(msg) + '</span>');
-    }
-    if (_jsTestPreVerboseLogging) {
-        _bufferedLogToConsole('PASS ' + msg);
-    }
+function testPassedOptions(msg, addSpan) {
+  reportTestResultsToHarness(true, _currentTestName + ": " + msg);
+  if (addSpan && !quietMode()) {
+    _addSpan('<span><span class="pass">PASS</span> ' + escapeHTML(_currentTestName) + ": " + escapeHTML(msg) + '</span>');
+  }
+  if (_jsTestPreVerboseLogging) {
+    _bufferedLogToConsole('PASS ' + msg);
+  }
 }
 
 /**
@@ -290,16 +280,14 @@ function testPassedOptions(msg, addSpan)
  * @param {string} msg The message to be shown in the skip result.
  * @param {boolean} addSpan Indicates whether the message will be visible (thus counted in the results) or not.
  */
-function testSkippedOptions(msg, addSpan)
-{
-    reportSkippedTestResultsToHarness(true, _currentTestName + ": " + msg);
-    if (addSpan && !quietMode())
-    {
-        _addSpan('<span><span class="warn">SKIP</span> ' + escapeHTML(_currentTestName) + ": " + escapeHTML(msg) + '</span>');
-    }
-    if (_jsTestPreVerboseLogging) {
-        _bufferedLogToConsole('SKIP' + msg);
-    }
+function testSkippedOptions(msg, addSpan) {
+  reportSkippedTestResultsToHarness(true, _currentTestName + ": " + msg);
+  if (addSpan && !quietMode()) {
+    _addSpan('<span><span class="warn">SKIP</span> ' + escapeHTML(_currentTestName) + ": " + escapeHTML(msg) + '</span>');
+  }
+  if (_jsTestPreVerboseLogging) {
+    _bufferedLogToConsole('SKIP' + msg);
+  }
 }
 
 /**
@@ -307,61 +295,55 @@ function testSkippedOptions(msg, addSpan)
  * @param {string} msg The message to be shown in the fail result.
  * @param {boolean} exthrow Indicates whether the function will throw a TestFailedException or not.
  */
-function testFailedOptions(msg, exthrow)
-{
-    reportTestResultsToHarness(false, _currentTestName + ": " + msg);
-    _addSpan('<span><span class="fail">FAIL</span> ' + escapeHTML(_currentTestName) + ": " + escapeHTML(msg) + '</span>');
-    _bufferedLogToConsole('FAIL ' + msg);
-    _flushBufferedLogsToConsole();
-    if (exthrow) {
-        _currentTestName = ""; //Remembering to set the name of current testcase to empty string.
-        throw new TestFailedException(msg);
-    }
+function testFailedOptions(msg, exthrow) {
+  reportTestResultsToHarness(false, _currentTestName + ": " + msg);
+  _addSpan('<span><span class="fail">FAIL</span> ' + escapeHTML(_currentTestName) + ": " + escapeHTML(msg) + '</span>');
+  _bufferedLogToConsole('FAIL ' + msg);
+  _flushBufferedLogsToConsole();
+  if (exthrow) {
+    _currentTestName = ""; //Remembering to set the name of current testcase to empty string.
+    throw new TestFailedException(msg);
+  }
 }
 
-function areArraysEqual(_a, _b)
-{
-    try {
-        if (_a.length !== _b.length)
-            return false;
-        for (var i = 0; i < _a.length; i++)
-            if (_a[i] !== _b[i])
-                return false;
-    } catch (ex) {
+function areArraysEqual(_a, _b) {
+  try {
+    if (_a.length !== _b.length)
+      return false;
+    for (var i = 0; i < _a.length; i++)
+      if (_a[i] !== _b[i])
         return false;
-    }
-    return true;
-}
-
-function isMinusZero(n)
-{
-    // the only way to tell 0 from -0 in JS is the fact that 1/-0 is
-    // -Infinity instead of Infinity
-    return n === 0 && 1/n < 0;
-}
-
-function isResultCorrect(_actual, _expected)
-{
-    if (_expected === 0)
-        return _actual === _expected && (1/_actual) === (1/_expected);
-    if (_actual === _expected)
-        return true;
-    if (typeof(_expected) == "number" && isNaN(_expected))
-        return typeof(_actual) == "number" && isNaN(_actual);
-    if (Object.prototype.toString.call(_expected) == Object.prototype.toString.call([]))
-        return areArraysEqual(_actual, _expected);
+  } catch (ex) {
     return false;
+  }
+  return true;
 }
 
-function stringify(v)
-{
-    if (v === 0 && 1/v < 0)
-        return "-0";
-    else return "" + v;
+function isMinusZero(n) {
+  // the only way to tell 0 from -0 in JS is the fact that 1/-0 is
+  // -Infinity instead of Infinity
+  return n === 0 && 1 / n < 0;
 }
 
-function evalAndLog(_a)
-{
+function isResultCorrect(_actual, _expected) {
+  if (_expected === 0)
+    return _actual === _expected && (1 / _actual) === (1 / _expected);
+  if (_actual === _expected)
+    return true;
+  if (typeof (_expected) == "number" && isNaN(_expected))
+    return typeof (_actual) == "number" && isNaN(_actual);
+  if (Object.prototype.toString.call(_expected) == Object.prototype.toString.call([]))
+    return areArraysEqual(_actual, _expected);
+  return false;
+}
+
+function stringify(v) {
+  if (v === 0 && 1 / v < 0)
+    return "-0";
+  else return "" + v;
+}
+
+function evalAndLog(_a) {
   if (typeof _a != "string")
     debug("WARN: tryAndLog() expects a string argument");
 
@@ -370,7 +352,7 @@ function evalAndLog(_a)
 
   var _av;
   try {
-     _av = eval(_a);
+    _av = eval(_a);
   } catch (e) {
     testFailed(_a + " threw exception " + e);
   }
@@ -378,61 +360,60 @@ function evalAndLog(_a)
 }
 
 function shouldBeString(evalable, expected) {
-    const val = eval(evalable);
-    const text = evalable + " should be " + expected + ".";
-    if (val == expected) {
-        testPassed(text);
-    } else {
-        testFailed(text + " (was " + val + ")");
-    }
+  const val = eval(evalable);
+  const text = evalable + " should be " + expected + ".";
+  if (val == expected) {
+    testPassed(text);
+  } else {
+    testFailed(text + " (was " + val + ")");
+  }
+  console.log(status.textContent);
 }
 
-function shouldBe(_a, _b, quiet)
-{
-    if (typeof _a != "string" || typeof _b != "string")
-        debug("WARN: shouldBe() expects string arguments");
-    var exception;
-    var _av;
-    try {
-        _av = eval(_a);
-    } catch (e) {
-        exception = e;
-    }
-    var _bv = eval(_b);
+function shouldBe(_a, _b, quiet) {
+  if (typeof _a != "string" || typeof _b != "string")
+    debug("WARN: shouldBe() expects string arguments");
+  var exception;
+  var _av;
+  try {
+    _av = eval(_a);
+  } catch (e) {
+    exception = e;
+  }
+  var _bv = eval(_b);
 
-    if (exception)
-        testFailed(_a + " should be " + _bv + ". Threw exception " + exception);
-    else if (isResultCorrect(_av, _bv)) {
-        if (!quiet) {
-            testPassed(_a + " is " + _b);
-        }
-    } else if (typeof(_av) == typeof(_bv))
-        testFailed(_a + " should be " + _bv + ". Was " + stringify(_av) + ".");
-    else
-        testFailed(_a + " should be " + _bv + " (of type " + typeof _bv + "). Was " + _av + " (of type " + typeof _av + ").");
+  if (exception)
+    testFailed(_a + " should be " + _bv + ". Threw exception " + exception);
+  else if (isResultCorrect(_av, _bv)) {
+    if (!quiet) {
+      testPassed(_a + " is " + _b);
+    }
+  } else if (typeof (_av) == typeof (_bv))
+    testFailed(_a + " should be " + _bv + ". Was " + stringify(_av) + ".");
+  else
+    testFailed(_a + " should be " + _bv + " (of type " + typeof _bv + "). Was " + _av + " (of type " + typeof _av + ").");
 }
 
-function shouldNotBe(_a, _b, quiet)
-{
-    if (typeof _a != "string" || typeof _b != "string")
-        debug("WARN: shouldNotBe() expects string arguments");
-    var exception;
-    var _av;
-    try {
-        _av = eval(_a);
-    } catch (e) {
-        exception = e;
-    }
-    var _bv = eval(_b);
+function shouldNotBe(_a, _b, quiet) {
+  if (typeof _a != "string" || typeof _b != "string")
+    debug("WARN: shouldNotBe() expects string arguments");
+  var exception;
+  var _av;
+  try {
+    _av = eval(_a);
+  } catch (e) {
+    exception = e;
+  }
+  var _bv = eval(_b);
 
-    if (exception)
-        testFailed(_a + " should not be " + _bv + ". Threw exception " + exception);
-    else if (!isResultCorrect(_av, _bv)) {
-        if (!quiet) {
-            testPassed(_a + " is not " + _b);
-        }
-    } else
-        testFailed(_a + " should not be " + _bv + ".");
+  if (exception)
+    testFailed(_a + " should not be " + _bv + ". Threw exception " + exception);
+  else if (!isResultCorrect(_av, _bv)) {
+    if (!quiet) {
+      testPassed(_a + " is not " + _b);
+    }
+  } else
+    testFailed(_a + " should not be " + _bv + ".");
 }
 
 function shouldBeTrue(_a) { shouldBe(_a, "true"); }
@@ -440,8 +421,7 @@ function shouldBeFalse(_a) { shouldBe(_a, "false"); }
 function shouldBeNaN(_a) { shouldBe(_a, "NaN"); }
 function shouldBeNull(_a) { shouldBe(_a, "null"); }
 
-function shouldBeEqualToString(a, b)
-{
+function shouldBeEqualToString(a, b) {
   var unevaledString = '"' + b.replace(/"/g, "\"") + '"';
   shouldBe(a, unevaledString);
 }
@@ -464,7 +444,7 @@ function shouldEvaluateTo(actual, expected) {
       return;
     }
     shouldBe("'" + actualValue.toString().replace(/\n/g, "") + "'",
-             "'" + expected.toString().replace(/\n/g, "") + "'");
+      "'" + expected.toString().replace(/\n/g, "") + "'");
   } else if (typeof expected == "object") {
     shouldBeTrue(actual + " == '" + expected + "'");
   } else if (typeof expected == "string") {
@@ -479,18 +459,17 @@ function shouldEvaluateTo(actual, expected) {
     shouldBe(actual, stringify(expected));
   } else {
     debug(expected + " is unknown type " + typeof expected);
-    shouldBeTrue(actual, "'"  +expected.toString() + "'");
+    shouldBeTrue(actual, "'" + expected.toString() + "'");
   }
 }
 
-function shouldBeNonZero(_a)
-{
+function shouldBeNonZero(_a) {
   var exception;
   var _av;
   try {
-     _av = eval(_a);
+    _av = eval(_a);
   } catch (e) {
-     exception = e;
+    exception = e;
   }
 
   if (exception)
@@ -501,14 +480,13 @@ function shouldBeNonZero(_a)
     testFailed(_a + " should be non-zero. Was " + _av);
 }
 
-function shouldBeNonNull(_a)
-{
+function shouldBeNonNull(_a) {
   var exception;
   var _av;
   try {
-     _av = eval(_a);
+    _av = eval(_a);
   } catch (e) {
-     exception = e;
+    exception = e;
   }
 
   if (exception)
@@ -519,14 +497,13 @@ function shouldBeNonNull(_a)
     testFailed(_a + " should be non-null. Was " + _av);
 }
 
-function shouldBeUndefined(_a)
-{
+function shouldBeUndefined(_a) {
   var exception;
   var _av;
   try {
-     _av = eval(_a);
+    _av = eval(_a);
   } catch (e) {
-     exception = e;
+    exception = e;
   }
 
   if (exception)
@@ -537,14 +514,13 @@ function shouldBeUndefined(_a)
     testFailed(_a + " should be undefined. Was " + _av);
 }
 
-function shouldBeDefined(_a)
-{
+function shouldBeDefined(_a) {
   var exception;
   var _av;
   try {
-     _av = eval(_a);
+    _av = eval(_a);
   } catch (e) {
-     exception = e;
+    exception = e;
   }
 
   if (exception)
@@ -556,45 +532,45 @@ function shouldBeDefined(_a)
 }
 
 function shouldBeLessThanOrEqual(_a, _b) {
-    if (typeof _a != "string" || typeof _b != "string")
-        debug("WARN: shouldBeLessThanOrEqual expects string arguments");
+  if (typeof _a != "string" || typeof _b != "string")
+    debug("WARN: shouldBeLessThanOrEqual expects string arguments");
 
-    var exception;
-    var _av;
-    try {
-        _av = eval(_a);
-    } catch (e) {
-        exception = e;
-    }
-    var _bv = eval(_b);
+  var exception;
+  var _av;
+  try {
+    _av = eval(_a);
+  } catch (e) {
+    exception = e;
+  }
+  var _bv = eval(_b);
 
-    if (exception)
-        testFailed(_a + " should be <= " + _b + ". Threw exception " + exception);
-    else if (typeof _av == "undefined" || _av > _bv)
-        testFailed(_a + " should be >= " + _b + ". Was " + _av + " (of type " + typeof _av + ").");
-    else
-        testPassed(_a + " is <= " + _b);
+  if (exception)
+    testFailed(_a + " should be <= " + _b + ". Threw exception " + exception);
+  else if (typeof _av == "undefined" || _av > _bv)
+    testFailed(_a + " should be >= " + _b + ". Was " + _av + " (of type " + typeof _av + ").");
+  else
+    testPassed(_a + " is <= " + _b);
 }
 
 function shouldBeGreaterThanOrEqual(_a, _b) {
-    if (typeof _a != "string" || typeof _b != "string")
-        debug("WARN: shouldBeGreaterThanOrEqual expects string arguments");
+  if (typeof _a != "string" || typeof _b != "string")
+    debug("WARN: shouldBeGreaterThanOrEqual expects string arguments");
 
-    var exception;
-    var _av;
-    try {
-        _av = eval(_a);
-    } catch (e) {
-        exception = e;
-    }
-    var _bv = eval(_b);
+  var exception;
+  var _av;
+  try {
+    _av = eval(_a);
+  } catch (e) {
+    exception = e;
+  }
+  var _bv = eval(_b);
 
-    if (exception)
-        testFailed(_a + " should be >= " + _b + ". Threw exception " + exception);
-    else if (typeof _av == "undefined" || _av < _bv)
-        testFailed(_a + " should be >= " + _b + ". Was " + _av + " (of type " + typeof _av + ").");
-    else
-        testPassed(_a + " is >= " + _b);
+  if (exception)
+    testFailed(_a + " should be >= " + _b + ". Threw exception " + exception);
+  else if (typeof _av == "undefined" || _av < _bv)
+    testFailed(_a + " should be >= " + _b + ". Was " + _av + " (of type " + typeof _av + ").");
+  else
+    testPassed(_a + " is >= " + _b);
 }
 
 function expectTrue(v, msg) {
@@ -606,43 +582,42 @@ function expectTrue(v, msg) {
 }
 
 function maxArrayDiff(a, b) {
-    if (a.length != b.length)
-        throw new Error(`a and b have different lengths: ${a.length} vs ${b.length}`);
+  if (a.length != b.length)
+    throw new Error(`a and b have different lengths: ${a.length} vs ${b.length}`);
 
-    let diff = 0;
-    for (const i in a) {
-        diff = Math.max(diff, Math.abs(a[i] - b[i]));
-    }
-    return diff;
+  let diff = 0;
+  for (const i in a) {
+    diff = Math.max(diff, Math.abs(a[i] - b[i]));
+  }
+  return diff;
 }
 
-function expectArray(was, expected, maxDiff=0) {
-    const diff = maxArrayDiff(expected, was);
-    let str = `Expected [${expected.toString()}]`;
-    let fn = testPassed;
-    if (maxDiff) {
-        str += ' +/- ' + maxDiff;
-    }
-    if (diff > maxDiff) {
-        fn = testFailed;
-        str += `, was [${was.toString()}]`;
-    }
-    fn(str);
+function expectArray(was, expected, maxDiff = 0) {
+  const diff = maxArrayDiff(expected, was);
+  let str = `Expected [${expected.toString()}]`;
+  let fn = testPassed;
+  if (maxDiff) {
+    str += ' +/- ' + maxDiff;
+  }
+  if (diff > maxDiff) {
+    fn = testFailed;
+    str += `, was [${was.toString()}]`;
+  }
+  fn(str);
 }
 
-function shouldThrow(_a, _e)
-{
+function shouldThrow(_a, _e) {
   var exception;
   var _av;
   try {
-     _av = eval(_a);
+    _av = eval(_a);
   } catch (e) {
-     exception = e;
+    exception = e;
   }
 
   var _ev;
   if (_e)
-      _ev =  eval(_e);
+    _ev = eval(_e);
 
   if (exception) {
     if (typeof _e == "undefined" || exception == _ev)
@@ -667,32 +642,32 @@ function shouldNotThrow(evalStr, desc) {
 
 
 function shouldBeType(_a, _type) {
-    var exception;
-    var _av;
-    try {
-        _av = eval(_a);
-    } catch (e) {
-        exception = e;
-    }
+  var exception;
+  var _av;
+  try {
+    _av = eval(_a);
+  } catch (e) {
+    exception = e;
+  }
 
-    var _typev = eval(_type);
+  var _typev = eval(_type);
 
-    if(_typev === Number){
-        if(_av instanceof Number){
-            testPassed(_a + " is an instance of Number");
-        }
-        else if(typeof(_av) === 'number'){
-            testPassed(_a + " is an instance of Number");
-        }
-        else{
-            testFailed(_a + " is not an instance of Number");
-        }
+  if (_typev === Number) {
+    if (_av instanceof Number) {
+      testPassed(_a + " is an instance of Number");
     }
-    else if (_av instanceof _typev) {
-        testPassed(_a + " is an instance of " + _type);
-    } else {
-        testFailed(_a + " is not an instance of " + _type);
+    else if (typeof (_av) === 'number') {
+      testPassed(_a + " is an instance of Number");
     }
+    else {
+      testFailed(_a + " is not an instance of Number");
+    }
+  }
+  else if (_av instanceof _typev) {
+    testPassed(_a + " is an instance of " + _type);
+  } else {
+    testFailed(_a + " is not an instance of " + _type);
+  }
 }
 
 /**
@@ -701,16 +676,16 @@ function shouldBeType(_a, _type) {
  * @param {straing} message
  */
 function checkMessage(exp, message) {
-    if ( !exp )
-        _addSpan('<span><span class="warn">WARNING</span> ' + escapeHTML(_currentTestName) + ": " + escapeHTML(message) + '</span>');
+  if (!exp)
+    _addSpan('<span><span class="warn">WARNING</span> ' + escapeHTML(_currentTestName) + ": " + escapeHTML(message) + '</span>');
 }
 
 function assertMsg(assertion, msg) {
-    if (assertion) {
-        testPassed(msg);
-    } else {
-        testFailed(msg);
-    }
+  if (assertion) {
+    testPassed(msg);
+  } else {
+    testFailed(msg);
+  }
 }
 
 /**
@@ -722,57 +697,57 @@ function assertMsg(assertion, msg) {
  * @param {boolean} exthrow In case of failure, determines if the function will throw a TestFailedException.
  */
 function assertMsgOptions(assertion, msg, verbose, exthrow) {
-    if (assertion) {
-        testPassedOptions(msg, verbose);
-    } else {
-        testFailedOptions(msg, exthrow);
-    }
+  if (assertion) {
+    testPassedOptions(msg, verbose);
+  } else {
+    testFailedOptions(msg, exthrow);
+  }
 }
 
 
 function webglHarnessCollectGarbage() {
-    if (window.GCController) {
-        window.GCController.collect();
-        return;
-    }
+  if (window.GCController) {
+    window.GCController.collect();
+    return;
+  }
 
-    if (window.opera && window.opera.collect) {
-        window.opera.collect();
-        return;
-    }
+  if (window.opera && window.opera.collect) {
+    window.opera.collect();
+    return;
+  }
 
-    try {
-        window.QueryInterface(Components.interfaces.nsIInterfaceRequestor)
-              .getInterface(Components.interfaces.nsIDOMWindowUtils)
-              .garbageCollect();
-        return;
-    } catch(e) {}
+  try {
+    window.QueryInterface(Components.interfaces.nsIInterfaceRequestor)
+      .getInterface(Components.interfaces.nsIDOMWindowUtils)
+      .garbageCollect();
+    return;
+  } catch (e) { }
 
-    if (window.gc) {
-        window.gc();
-        return;
-    }
+  if (window.gc) {
+    window.gc();
+    return;
+  }
 
-    if (window.CollectGarbage) {
-        CollectGarbage();
-        return;
-    }
+  if (window.CollectGarbage) {
+    CollectGarbage();
+    return;
+  }
 
-    // WebKit's MiniBrowser.
-    if (window.$vm) {
-        window.$vm.gc();
-        return;
-    }
+  // WebKit's MiniBrowser.
+  if (window.$vm) {
+    window.$vm.gc();
+    return;
+  }
 
-    function gcRec(n) {
-        if (n < 1)
-            return {};
-        var temp = {i: "ab" + i + (i / 100000)};
-        temp += "foo";
-        gcRec(n-1);
-    }
-    for (var i = 0; i < 1000; i++)
-        gcRec(10);
+  function gcRec(n) {
+    if (n < 1)
+      return {};
+    var temp = { i: "ab" + i + (i / 100000) };
+    temp += "foo";
+    gcRec(n - 1);
+  }
+  for (var i = 0; i < 1000; i++)
+    gcRec(10);
 }
 
 function finishTest() {
@@ -816,7 +791,7 @@ function finishTest() {
  * @param {function(): any} fn
  */
 function call(fn) {
-    return fn();
+  return fn();
 }
 
 // -
@@ -833,14 +808,14 @@ function range(a, b) {
   b = b || 0;
   const begin = Math.min(a, b);
   const end = Math.max(a, b);
-  return new Array(end-begin).fill().map((_,i) => begin+i);
+  return new Array(end - begin).fill().map((_, i) => begin + i);
 }
 {
   let was;
-  console.assert((was = range(0)).toString() == [].toString(), {was});
-  console.assert((was = range(1)).toString() == [0].toString(), {was});
-  console.assert((was = range(3)).toString() == [0,1,2].toString(), {was});
-  console.assert((was = range(1,3)).toString() == [1,2].toString(), {was});
+  console.assert((was = range(0)).toString() == [].toString(), { was });
+  console.assert((was = range(1)).toString() == [0].toString(), { was });
+  console.assert((was = range(3)).toString() == [0, 1, 2].toString(), { was });
+  console.assert((was = range(1, 3)).toString() == [1, 2].toString(), { was });
 }
 
 // -
@@ -886,7 +861,7 @@ function crossCombine(...comboDimensions) {
 
   let res = [{}];
   for (const i in comboDimensions) {
-    const next = comboDimensions[i] || throwv({i, comboDimensions});
+    const next = comboDimensions[i] || throwv({ i, comboDimensions });
     res = crossCombine2(res, next);
   }
   return res;
@@ -910,8 +885,8 @@ function shr_u32(val, n) {
   val >>= n; // In JS this is shr_i32, with sign-extension for negative lhs.
 
   if (n > 0) {
-      const result_mask = (1 << (32-n)) - 1;
-      val &= result_mask;
+    const result_mask = (1 << (32 - n)) - 1;
+    val &= result_mask;
   }
 
   return val;
@@ -921,7 +896,7 @@ console.assert(0xffff_ff00 >> 4 == (0xffff_fff0 | 0));
 console.assert(shr_u32(0xffff_ff00, 4) != (0xffff_fff0 | 0));
 console.assert(shr_u32(0xffff_ff00, 4) == (0x0fff_fff0 | 0));
 console.assert(shr_u32(0xffff_ff00, 4) == 0x0fff_fff0);
-console.assert(shr_u32(0xffff_ff00|0, 4) == 0x0fff_fff0);
+console.assert(shr_u32(0xffff_ff00 | 0, 4) == 0x0fff_fff0);
 
 /**
  * @type {(val: number) => U32}
@@ -941,8 +916,8 @@ const bitcast_f32_from_u32 = call(() => {
   const u32 = new Uint32Array(1);
   const f32 = new Float32Array(u32.buffer);
   return function bitcast_f32_from_u32(v) {
-      u32[0] = v;
-      return f32[0];
+    u32[0] = v;
+    return f32[0];
   };
 });
 
@@ -959,10 +934,10 @@ class PrngXorwow {
    * @param {U32[] | U32 | undefined} seed
    */
   constructor(seed) {
-    if (typeof(seed) == 'string') {
+    if (typeof (seed) == 'string') {
       seed = parseInt(seed);
     }
-    if (typeof(seed) == 'object' && seed.length !== undefined) {
+    if (typeof (seed) == 'object' && seed.length !== undefined) {
       // array-ish
       if (!seed.length) {
         seed = new Uint32Array(state.length);
@@ -981,8 +956,8 @@ class PrngXorwow {
     }
 
     // Elide zeros from seed for compactness:
-    while (seed[seed.length-1] == 0) {
-        seed = seed.slice(0, seed.length-1);
+    while (seed[seed.length - 1] == 0) {
+      seed = seed.slice(0, seed.length - 1);
     }
     this.actual_seed = seed.slice();
 
@@ -1018,35 +993,35 @@ class PrngXorwow {
    * @returns {U32}
    */
   next_u32() {
-      /* Algorithm "xorwow" from p. 5 of Marsaglia, "Xorshift RNGs" */
-      const state = this.state;
-      let t = state[4];
+    /* Algorithm "xorwow" from p. 5 of Marsaglia, "Xorshift RNGs" */
+    const state = this.state;
+    let t = state[4];
 
-      const s = state[0];
-      state[4] = state[3];
-      state[3] = state[2];
-      state[2] = state[1];
-      state[1] = s;
+    const s = state[0];
+    state[4] = state[3];
+    state[3] = state[2];
+    state[2] = state[1];
+    state[1] = s;
 
-      t ^= shr_u32(t, 2);
-      t ^= t << 1;
-      t ^= s ^ (s << 4);
-      state[0] = t;
-      state[5] += 362437;
+    t ^= shr_u32(t, 2);
+    t ^= t << 1;
+    t ^= s ^ (s << 4);
+    state[0] = t;
+    state[5] += 362437;
 
-      let ret = state[0] + state[5];
-      ret = bitcast_u32(ret);
-      return ret;
+    let ret = state[0] + state[5];
+    ret = bitcast_u32(ret);
+    return ret;
   }
 
   /**
    * @returns {number} range: [0.0, 1.0)
    */
   next_unorm() {
-      let ret = this.next_u32();
-      const U32_MAX = 0xffff_ffff;
-      ret /= (U32_MAX + 1);
-      return ret; // [0,1)
+    let ret = this.next_u32();
+    const U32_MAX = 0xffff_ffff;
+    ret /= (U32_MAX + 1);
+    return ret; // [0,1)
   }
 
   /**
@@ -1057,7 +1032,7 @@ class PrngXorwow {
   getRandomValues(dest) {
     const u8s = abv_cast(Uint8Array, dest);
     const len_in_u32 = Math.floor(u8s.length / 4);
-    const u32s = abv_cast(Uint32Array, u8s.subarray(0, 4*len_in_u32));
+    const u32s = abv_cast(Uint32Array, u8s.subarray(0, 4 * len_in_u32));
     for (const i in u32s) {
       u32s[i] = this.next_u32();
     }
@@ -1088,7 +1063,7 @@ function abv_cast(ctor, abv) {
 /**
  * @returns {PrngXorwow}
  */
-function getDrng(defaultSeed=1) {
+function getDrng(defaultSeed = 1) {
   if (globalThis._DRNG) return globalThis._DRNG;
 
   const seedKeyName = `seed`;
