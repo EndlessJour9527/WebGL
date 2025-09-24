@@ -112,13 +112,26 @@ async function main() {
 
   ensureDirSync(logsOut);
 
-  const caseFiles = glob.sync(caseGlob, { cwd: casesRoot, absolute: true });
-  console.log(`[Runner] Found ${caseFiles.length} case(s).`);
+
+  // Support excludeDirs: filter out cases matching glob patterns (relative to casesRoot)
+  const excludeDirs = Array.isArray(cfg.excludeDirs) ? cfg.excludeDirs : [];
+  let caseFiles = glob.sync(caseGlob, { cwd: casesRoot, absolute: true });
+  if (excludeDirs.length > 0) {
+    const minimatch = require('minimatch');
+    caseFiles = caseFiles.filter(absPath => {
+      // Get relative path from casesRoot for glob matching
+      const relPath = path.relative(casesRoot, absPath);
+      return !excludeDirs.some(pattern => minimatch(relPath, pattern));
+    });
+  }
+  console.log(`[Runner] Found ${caseFiles.length} case(s) after excludeDirs filter.`);
 
   for (const absCasePath of caseFiles) {
     const rel = path.relative(casesRoot, absCasePath);
-    const caseName = rel.replace(/[\\/]/g, '__').replace(/\.html$/i, '');
-    const outDir = path.join(logsOut, caseName);
+    // Split rel into dir and file name (without .html)
+    const relDir = path.dirname(rel);
+    const baseName = path.basename(rel, '.html');
+    const outDir = path.join(logsOut, relDir, baseName);
 
     console.log(`\n[Runner] Running case: ${rel}`);
 
@@ -146,12 +159,12 @@ async function main() {
     }
     if (child) activeChildren.add(child);
 
-  const waitMs = (cfg.execution && typeof cfg.execution.waitMs === 'number') ? cfg.execution.waitMs : 8000;
-  await sleep(waitMs);
+    const waitMs = (cfg.execution && typeof cfg.execution.waitMs === 'number') ? cfg.execution.waitMs : 8000;
+    await sleep(waitMs);
 
-  rmDirSyncSafe(outDir);
-  ensureDirSync(outDir);
-  copyDirSync(logsSrc, outDir);
+    rmDirSyncSafe(outDir);
+    ensureDirSync(outDir);
+    copyDirSync(logsSrc, outDir);
 
     try {
       if (child) {

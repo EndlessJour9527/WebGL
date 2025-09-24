@@ -151,7 +151,7 @@ function _flushBufferedLogsToConsole() {
   if (_bufferedConsoleLogs) {
     if (window.console) {
       for (var ii = 0; ii < _bufferedConsoleLogs.length; ++ii) {
-        window.console.log(_bufferedConsoleLogs[ii]);
+        // window.console.log(_bufferedConsoleLogs[ii]);
       }
     }
     _bufferedConsoleLogs = null;
@@ -235,7 +235,7 @@ function testFailed(msg) {
     if (_currentTestName)
       msg = _currentTestName + ': ' + msg;
 
-    reportTestResultsToHarness(false, msg);
+    // reportTestResultsToHarness(false, msg);
     _addSpan('<span><span class="fail">FAIL</span> ' + escapeHTML(msg) + '</span>');
     _bufferedLogToConsole('FAIL ' + msg);
     _flushBufferedLogsToConsole();

@@ -4,9 +4,11 @@
   "private": true,
   "license": "MIT",
   "scripts": {
-    "runner": "node ./runner.js"
+    "jsar-runner": "node ./jsar-runner.js",
+    "chrome-runner": "node ./chrome-runner.js"
   },
   "dependencies": {
-    "glob": "^7.2.3"
+    "glob": "^7.2.3",
+    "puppeteer": "^24.22.2"
   }
 }

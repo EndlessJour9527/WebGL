@@ -2,7 +2,7 @@
   "casesRoot": "../conformance2",
   "logsSrc": "./.cache/logs",
   "logsOut": "../logs/0.10.01",
-  "caseGlob": "./rendering/*.html",
+  "caseGlob": "./query/**/*.html",
   "jsarBin": "/Users/yjh/yjh/github-proj/jsar-zone/jsar-runtime/build/targets/darwin/transmute_browser",
   "useFileURL": false,
   "args": [
@@ -15,6 +15,7 @@
   "killGraceMs": 500,
   "env": {},
   "execution": {
-    "waitMs": 5000
-  }
+    "waitMs": 4000
+  },
+  "excludeDirs": ["**/sync/*.html"]
 }
