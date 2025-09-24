@@ -19,11 +19,8 @@ const config = {
   excludeDirs: Array.isArray(runnerCfg.excludeDirs) ? runnerCfg.excludeDirs : []
 };
 
-const glob = require('glob');
 
-function ensureDirSync(dir) {
-  if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
-}
+const utils = require('./runner-utils');
 
 async function runCase(browser, absCasePath, caseName) {
   const url = 'file://' + absCasePath;
@@ -38,7 +35,7 @@ async function runCase(browser, absCasePath, caseName) {
   const relDir = path.dirname(rel);
   const baseName = path.basename(rel, '.html');
   const outDir = path.join(config.logsOut, relDir);
-  ensureDirSync(outDir);
+  utils.ensureDirSync(outDir);
   fs.writeFileSync(path.join(outDir, baseName + '.log'), logs.join('\n'), 'utf-8');
   return logs;
 }
@@ -53,15 +50,8 @@ function analyzeLogs(logs) {
 }
 
 async function main() {
-  ensureDirSync(config.logsOut);
-  let caseFiles = glob.sync(config.caseGlob, { cwd: config.casesRoot, absolute: true });
-  if (config.excludeDirs.length > 0) {
-    const minimatch = require('minimatch');
-    caseFiles = caseFiles.filter(absPath => {
-      const relPath = path.relative(config.casesRoot, absPath);
-      return !config.excludeDirs.some(pattern => minimatch(relPath, pattern));
-    });
-  }
+  utils.ensureDirSync(config.logsOut);
+  const caseFiles = utils.getCaseFiles(config.casesRoot, config.caseGlob, config.excludeDirs);
   console.log(`[ChromeRunner] Found ${caseFiles.length} case(s) after excludeDirs filter.`);
   const browser = await puppeteer.launch({ headless: 'new', args: ['--no-sandbox'] });
   let table = '| case | PASS | FAIL | 通过率 |\n|------|------|------|--------|\n';

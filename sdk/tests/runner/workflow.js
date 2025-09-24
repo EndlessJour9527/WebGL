@@ -66,20 +66,20 @@ function diffSummary(jsar, chrome) {
   // Directly compare using the case field
   const allCases = Array.from(new Set([...Object.keys(jsar), ...Object.keys(chrome)])).sort();
   let table = '| case | JSAR PASS | JSAR FAIL | Chrome PASS | Chrome FAIL |\n|------|-----------|-----------|-------------|-------------|\n';
-  let matchCount = 0, mismatchCount = 0, missingCount = 0;
+  let jsarPass = 0, jsarFail = 0, chromePass = 0, chromeFail = 0, missingCount = 0;
   for (const c of allCases) {
     const j = jsar[c] || { pass: '-', fail: '-' };
     const ch = chrome[c] || { pass: '-', fail: '-' };
-    if (j.pass === ch.pass && j.fail === ch.fail && j.pass !== '-' && ch.pass !== '-') {
-      matchCount++;
-    } else if (j.pass === '-' || ch.pass === '-') {
+    if (typeof j.pass === 'number') jsarPass += j.pass;
+    if (typeof j.fail === 'number') jsarFail += j.fail;
+    if (typeof ch.pass === 'number') chromePass += ch.pass;
+    if (typeof ch.fail === 'number') chromeFail += ch.fail;
+    if (j.pass === '-' || ch.pass === '-') {
       missingCount++;
-    } else {
-      mismatchCount++;
     }
     table += `| ${c} | ${j.pass} | ${j.fail} | ${ch.pass} | ${ch.fail} |\n`;
   }
-  table += `| **Summary** | Matches: ${matchCount} | Mismatches: ${mismatchCount} | Missing: ${missingCount} |  |\n`;
+  table += `| **Summary** | JSAR PASS: ${jsarPass} | JSAR FAIL: ${jsarFail} | Chrome PASS: ${chromePass} | Chrome FAIL: ${chromeFail} | Missing: ${missingCount} |\n`;
   return table;
 }
 

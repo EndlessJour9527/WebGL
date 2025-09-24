@@ -10,30 +10,14 @@ const fsp = fs.promises;
 const path = require('path');
 const { exec, spawn } = require('child_process');
 const glob = require('glob');
+const utils = require('./runner-utils');
 
 function readJSON(p) {
   return JSON.parse(fs.readFileSync(p, 'utf-8'));
 }
 
-function ensureDirSync(dir) {
-  if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
-}
-
-function copyDirSync(src, dest) {
-  ensureDirSync(dest);
-  if (!fs.existsSync(src)) return;
-  for (const entry of fs.readdirSync(src)) {
-    const s = path.join(src, entry);
-    const d = path.join(dest, entry);
-    const stat = fs.statSync(s);
-    if (stat.isDirectory()) copyDirSync(s, d);
-    else fs.copyFileSync(s, d);
-  }
-}
-
-function rmDirSyncSafe(dir) {
-  if (fs.existsSync(dir)) fs.rmSync(dir, { recursive: true, force: true });
-}
+function ensureDirSync(dir) { utils.ensureDirSync(dir); }
+function rmDirSyncSafe(dir) { utils.rmDirSyncSafe(dir); }
 
 function sleep(ms) {
   return new Promise((res) => setTimeout(res, ms));
@@ -112,18 +96,9 @@ async function main() {
 
   ensureDirSync(logsOut);
 
-
   // Support excludeDirs: filter out cases matching glob patterns (relative to casesRoot)
   const excludeDirs = Array.isArray(cfg.excludeDirs) ? cfg.excludeDirs : [];
-  let caseFiles = glob.sync(caseGlob, { cwd: casesRoot, absolute: true });
-  if (excludeDirs.length > 0) {
-    const minimatch = require('minimatch');
-    caseFiles = caseFiles.filter(absPath => {
-      // Get relative path from casesRoot for glob matching
-      const relPath = path.relative(casesRoot, absPath);
-      return !excludeDirs.some(pattern => minimatch(relPath, pattern));
-    });
-  }
+  const caseFiles = utils.getCaseFiles(casesRoot, caseGlob, excludeDirs);
   console.log(`[Runner] Found ${caseFiles.length} case(s) after excludeDirs filter.`);
 
   for (const absCasePath of caseFiles) {
@@ -164,7 +139,7 @@ async function main() {
 
     rmDirSyncSafe(outDir);
     ensureDirSync(outDir);
-    copyDirSync(logsSrc, outDir);
+    utils.copyDirSync(logsSrc, outDir);
 
     try {
       if (child) {
